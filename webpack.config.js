@@ -1,34 +1,86 @@
 var path = require("path");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BabiliPlugin = require('babili-webpack-plugin');
+
+const plugins = [
+  new ExtractTextPlugin({
+    filename: './bundle.css',
+    allChunks: true,
+  }),
+];
+console.log("ENV", process.env.NODE_ENV)
+// if (process.env.NODE_ENV === 'production') plugins.push(new BabiliPlugin());
 
 module.exports = {
-  entry: "./index.js",
+  
+  entry: [
+    "./index.js",
+    "./styles/styles.css",
+    "whatwg-fetch"
+  ],
+  
   output: {
     filename: "bundle.js",
+    path: path.resolve(__dirname, './'),
   },
+  
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: "babel-loader"
-    }]
+    // loaders: [
+    //   {
+    //     test: /\.js$/,
+    //     exclude: /node_modules/,
+    //     loader: "babel-loader"
+    //   },
+    //   {
+    //     test: /\.css$/,
+    //     use: ExtractTextPlugin.extract({
+    //       use: 'css-loader?importLoaders=1',
+    //     }),
+    //   }
+    // ]
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        query: {
+          presets: [
+            'es2015',
+          ],
+          plugins: [],
+        },
+        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, './'),
+        ],
+      }, 
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          use: 'css-loader?importLoaders=1',
+        }),
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 100000
+            }
+          }
+        ]
+      }
+    ],
   },
+  
+  plugins: plugins,
+  
   devtool: "cheap-eval-source-map",
-  //  devServer: {
-  //   proxy: { // proxy URLs to backend development server
-  //     // '/api': 'http://localhost:3000'
-  //   },
-  //   contentBase: path.join(__dirname, 'public'), // boolean | string | array, static file location
-  //   compress: true, // enable gzip compression
-  //   historyApiFallback: true, // true for index.html upon 404, object for multiple paths
-  //   hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
-  //   https: false, // true for self-signed, object for cert authority
-  //   noInfo: true, // only errors & warns on hot reload
-  //   // ...
-  // },
+
   devServer: {
     contentBase: path.join(__dirname, ""),
     compress: true,
     port: 8080,
     historyApiFallback: true
-}
+  }
 }

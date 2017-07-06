@@ -293,6 +293,7 @@ main {
       font-size: 18px; } }
 .contact a {
   color: #aaa;
+  word-break: break-all;
   transition: all 0.35s ease; }
   .contact a:hover {
     color: #000; }

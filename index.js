@@ -346,12 +346,32 @@ app({
         window.setTimeout(actions.formMessageClear, 5000);
     },
 
-    formMessageClear: (state, actions) => ({formSuccess: false, formSubmitted: false})
+    formMessageClear: (state, actions) => ({formSuccess: false, formSubmitted: false}),
+
+    addBrowserClasses: () => {
+		var html = document.querySelector('html');
+		var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+		var isAndroid = /(android)/i.test(navigator.userAgent);
+
+        function addClass(el, className){
+            if (el.classList)
+            el.classList.add(className);
+            else
+            el.className += ' ' + className;
+        }
+
+		if(iOS){
+			addClass(html, 'ios');
+		} else if(isAndroid){
+			addClass(html, 'android');
+		}
+	}
   },
   events: {
     
     loaded: (state, actions) => {
         actions.getContent();
+        actions.addBrowserClasses();
     },
     
     route: (state, actions, data) => {
